@@ -6,7 +6,7 @@
   "keywords": ["node", "express", "heroku"],
   "image": "heroku/nodejs",
   
-  "addons":{
+  "addons":[
     "heroku-redis"
-  }
+  ]
 }
