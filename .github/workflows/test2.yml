@@ -1,0 +1,54 @@
+# This is a basic workflow to help you get started with Actions
+
+name: TEST-BACKEND-WORKFLOW
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    types: [ labeled ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  ReviewApp:
+    if: ${{github.event.label.name == 'review-app'}}
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          author_name: 'TEST-BACKEND-WORKFLOW'
+          text: 'Review APP deployment started'
+          fields: repo,message,eventName,workflow,job,took
+        env:
+          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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 # required
+        if: always() # Pick up events even if the job fails or is canceled.
+      
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: |
+          write-output "Yes julio label present..."
+  job2:
+    if: ${{github.event.label.name != 'review-app'}}
+    # The type of runner that the job will run on
+    runs-on: windows-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: |
+          write-output "No julio label present..."
