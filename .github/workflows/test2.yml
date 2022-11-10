@@ -22,6 +22,6 @@ jobs:
     # The type of runner that the job will run on
     runs-on: windows-latest
     steps:
-      - uses: actions/whiplash-reviewapp-composite-action@main
+      - uses: ggsoftcompany/whiplash-reviewapp-composite-action@main
         with:
           github-pat: 'pepe'
