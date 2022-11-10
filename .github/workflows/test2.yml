@@ -24,6 +24,7 @@ jobs:
     steps:
       - uses: ggsoftcompany/whiplash-reviewapp-composite-action@main
         with:
-          github_accessToken: 'pepe'
+          github_accessToken: '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'
           heroku_apiKey: '09482b4f-5824-4b30-9e0a-5cb142788058'
-          heroku_targetPipelineName: 'ggsoft-backend-pipeline'
+          heroku_pipelineName: 'ggsoft-backend-pipeline'
+          
