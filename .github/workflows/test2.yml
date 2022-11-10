@@ -21,32 +21,7 @@ jobs:
     if: ${{github.event.label.name == 'review-app'}}
     # The type of runner that the job will run on
     runs-on: windows-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - uses: 8398a7/action-slack@v3
+      - uses: actions/whiplash-reviewapp-composite-action@v1
         with:
-          status: ${{ job.status }}
-          text: 'Review APP deployment started '
-        env:
-          SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' # required
-        if: always() # Pick up events even if the job fails or is canceled.
-      
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: |
-          write-output "Yes julio label present..."
-  job2:
-    if: ${{github.event.label.name != 'review-app'}}
-    # The type of runner that the job will run on
-    runs-on: windows-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
-    steps:
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: |
-          write-output "No julio label present..."
+          github-pat: 'pepe'
