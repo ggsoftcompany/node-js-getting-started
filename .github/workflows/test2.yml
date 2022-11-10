@@ -31,7 +31,7 @@ jobs:
           text: 'Review APP deployment started'
           fields: repo,message
         env:
-          SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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 # required
+          SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' # required
         if: always() # Pick up events even if the job fails or is canceled.
       
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
