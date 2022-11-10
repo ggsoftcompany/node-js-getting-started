@@ -27,7 +27,7 @@ jobs:
       - uses: 8398a7/action-slack@v3
         with:
           status: ${{ job.status }}
-          text: 'Review APP deployment started'
+          text: 'Review APP deployment started '
         env:
           SLACK_WEBHOOK_URL: 'https://hooks.slack.com/services/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' # required
         if: always() # Pick up events even if the job fails or is canceled.
