@@ -9,6 +9,11 @@ on:
   workflow_dispatch:
 env:
   SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   pre-execution-job:
     name: 'Generate review apps URLs'
