@@ -18,7 +18,7 @@ jobs:
     runs-on: windows-latest
     environment: 
       name: 'Review'
-      url: ${{ steps.generateurl.outputs.reviewapp_URL }}
+      url: '${{ steps.generateurl.outputs.reviewapp_URL }}'
     # Map a step output to a job output
     outputs:
       reviewapp_URL: ${{ steps.generateurl.outputs.reviewapp_URL }}
