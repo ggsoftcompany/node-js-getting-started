@@ -13,6 +13,7 @@ env:
   SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
 jobs:
   generate-urls:
+    name: 'Creae Review APP'
     #if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app')}}
     runs-on: windows-latest
     environment: 
