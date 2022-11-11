@@ -8,8 +8,6 @@ on:
   # workflow_dispatch allow us o manually trigger
   workflow_dispatch:
 env:
-  REVIEWAPP_NAME: 'Whiplash Core'
-  SECONDARYREVIEWAPP_NAME: 'Whiplash UI'
   SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
 jobs:
   pre-execution-job:
@@ -32,7 +30,7 @@ jobs:
           secondaryReviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
   
   primary-reviewapp:
-    name: 'Deploy Review APP for ${{env.REVIEWAPP_NAME}}'
+    name: 'Deploy Review APP for Whiplash Core'
     environment: 
       name: 'Review App Core'
       url: '${{needs.pre-execution-job.outputs.reviewapp_URL}}'
@@ -50,7 +48,7 @@ jobs:
           secondaryReviewapp_URL: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
           
   secondary-reviewapp:
-    name: 'Deploy Review APP for ${{env.SECONDARYREVIEWAPP_NAME}}'
+    name: 'Deploy Review APP for Whiplash UI'
     environment: 
       name: 'Review App UI'
       url: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
