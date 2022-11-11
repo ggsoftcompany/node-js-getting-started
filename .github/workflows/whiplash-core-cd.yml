@@ -48,6 +48,7 @@ jobs:
   Development:  
     if: ${{github.event_name == 'push' && github.ref_name == 'main'}}
     runs-on: windows-latest
+    environment: Development
     steps:
      - run: |
           write-output: "Deploy to DEvelopment"
