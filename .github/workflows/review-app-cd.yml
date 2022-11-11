@@ -17,10 +17,10 @@ jobs:
     runs-on: windows-latest
     # Map a step output to a job output
     outputs:
-      output1: ''
-      #output2: ${{ steps.step2.outputs.test }}
+      reviewapp_URL: ${{ steps.create-review-apps-url.outputs.reviewapp_URL }}
+      secondaryReviewapp_URL: ${{ steps.create-review-apps-url.outputs.secondaryReviewapp_URL }}
     steps:
-      - id: ''
+      - id: create-review-apps-url
         run: |
           $reviewAppURL = "https://${{env.PRIMARY_REVIEWAPP_PREFIX_URL}}-pr-${{github.event.pull_request.number}}.herokuapp.com"
           echo "reviewapp_URL=$($reviewAppURL)"
