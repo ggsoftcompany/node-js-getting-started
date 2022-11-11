@@ -33,8 +33,7 @@ jobs:
           github_pullRequestNumber: '33'
   
   test:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: [generateurls]
-    steps:
-      - run: |
-          write-output "Hello: ${{needs.generateurls.outputs.reviewapp_URL}}"
+    steps: 
+      - run: echo "Hello:${{needs.generateurls.outputs.reviewapp_URL}}"
