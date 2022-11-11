@@ -29,7 +29,7 @@ env:
 jobs:
   # This workflow contains a single job called "build"
   ReviewApp:
-    if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app')}}
+    if: ${{github.event_name == 'pull_request' }}
     # The type of runner that the job will run on
     runs-on: windows-latest
     env:
