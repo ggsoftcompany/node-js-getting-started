@@ -7,12 +7,14 @@ on:
     types: [opened, reopened, synchronize, labeled]
   # workflow_dispatch allow us o manually trigger 
   workflow_dispatch:
-env:
-  SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
 
 concurrency: 
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref}}
   cancel-in-progress: true
+
+
+env:
+  SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
 
 jobs:
   pre-execution-job:
