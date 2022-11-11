@@ -32,3 +32,9 @@ jobs:
           secondaryReviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
           github_pullRequestNumber: '33'
   
+  test:
+    runs-on: windows-latest
+    needs: [generate-urls]
+    steps:
+      - run: |
+          write-output "Hello: ${{needs.generate-urls.outputs.reviewapp_URL}}"
