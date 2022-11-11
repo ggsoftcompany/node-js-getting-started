@@ -14,7 +14,7 @@ $ cd node-js-getting-started
 $ npm installf
 $ npm start
 ```
-12s
+12s 33
 Your app should now be running on [localhost:5000](http://localhost:5000/).f
 
 ## Deploying to Heroku
