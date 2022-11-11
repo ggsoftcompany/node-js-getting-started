@@ -1,0 +1,32 @@
+name: REVIEW-APPS-DEPLOYMENT
+on:
+  # trigger every time a pull request to main branch is opened, reopened or labeled.
+  # Used to spin up a review app
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, labeled]
+  # workflow_dispatch allow us o manually trigger
+  workflow_dispatch:
+env:
+  REVIEWAPP_PREFIX_URL: 'ggsoft-backend-ra'
+  SECONDARY_REVIEWAPP_PREFIX_URL: 'ggsoft-ui-ra'
+  SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
+jobs:
+  generate-urls:
+    #if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app')}}
+    runs-on: windows-latest
+    environment: 
+      name: 'Review'
+      url: ${{ steps.generateurl.outputs.reviewapp_URL }}
+    # Map a step output to a job output
+    outputs:
+      reviewapp_URL: ${{ steps.generateurl.outputs.reviewapp_URL }}
+      secondaryReviewapp_URL: ${{ steps.generateurl.outputs.secondaryReviewapp_URL }}
+    steps:
+      - id: generateurl
+        uses: ggsoftcompany/whiplash-reviewapp-composite-action/generate-reviewapp-urls@main
+        with:
+          reviewapp_prefixURL: '${{env.REVIEWAPP_PREFIX_URL}}'
+          secondaryReviewapp_prefixURL: '${{env.SECONDARY_REVIEWAPP_PREFIX_URL}}'
+          secondaryReviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
+  
