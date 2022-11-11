@@ -8,21 +8,19 @@ on:
   # workflow_dispatch allow us o manually trigger
   workflow_dispatch:
 env:
-  REVIEWAPP_PREFIX_URL: 'ggsoft-backend-ra'
-  SECONDARY_REVIEWAPP_PREFIX_URL: 'ggsoft-ui-ra'
   SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
 jobs:
-  precreationjob:
+  pre-execution-job:
     name: 'Generate review apps URLs'
-    #if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app')}}
+    if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app')}}
     runs-on: windows-latest
-    environment: 
-      name: 'Review'
-      url: '${{steps.main.outputs.reviewapp_URL}}'
     # Map a step output to a job output
     outputs:
       reviewapp_URL: ${{ steps.main.outputs.reviewapp_URL }}
       secondaryReviewapp_URL: ${{ steps.main.outputs.secondaryReviewapp_URL }}
+    env:
+      REVIEWAPP_PREFIX_URL: 'ggsoft-backend-ra'
+      SECONDARY_REVIEWAPP_PREFIX_URL: 'ggsoft-ui-ra'
     steps:
       - id: main
         uses: ggsoftcompany/whiplash-reviewapp-composite-action/generate-reviewapp-urls@main
@@ -30,10 +28,46 @@ jobs:
           reviewapp_prefixURL: '${{env.REVIEWAPP_PREFIX_URL}}'
           secondaryReviewapp_prefixURL: '${{env.SECONDARY_REVIEWAPP_PREFIX_URL}}'
           secondaryReviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
-          github_pullRequestNumber: '33'
   
-  test:
-    runs-on: ubuntu-latest
-    needs: [precreationjob]
-    steps: 
-      - run: echo ${{needs.precreationjob.outputs.reviewapp_URL}}
+  primary-reviewapp:
+    name: 'Deploy Review APP for Whiplash Core'
+    environment: 
+      name: 'Review App Core'
+      url: '${{needs.pre-execution-job.outputs.reviewapp_URL}}'
+    runs-on: windows-latest
+    needs: [pre-execution-job]
+    env:
+      HEROKU_PIPELINE: 'ggsoft-backend-pipeline'
+    steps:
+      - uses: ggsoftcompany/whiplash-reviewapp-composite-action/primary-ra-composite-action@main
+        with:
+          github_accessToken: ${{secrets.githubAccessToken}}
+          heroku_apiKey: ${{secrets.herokuApiKey}}
+          heroku_pipelineName: '${{env.HEROKU_PIPELINE}}'
+          reviewapp_URL: '${{needs.pre-execution-job.outputs.reviewapp_URL}}'
+          secondaryReviewapp_URL: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
+          
+  secondary-reviewapp:
+    name: 'Deploy Review APP for Whiplash UI'
+    environment: 
+      name: 'Review App UI'
+      url: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
+    runs-on: windows-latest
+    needs: [pre-execution-job]
+    env:
+      HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
+      REPOSITORY_FULL_NAME: 'ggsoftcompany/node-js-getting-started-ui'
+      DEFAULT_BRANCH_NAME: 'main'
+    steps:
+      - uses: ggsoftcompany/whiplash-reviewapp-composite-action/secondary-ra-composite-action@main
+        with:
+          github_accessToken: ${{secrets.githubAccessToken}}
+          heroku_apiKey: ${{secrets.herokuApiKey}}
+          heroku_pipelineName: '${{env.HEROKU_PIPELINE}}'
+          reviewapp_URL: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
+          primaryReviewapp_URL: '${{needs.pre-execution-job.outputs.reviewapp_URL}}'
+          reviewapp_defaultBranch: '${{env.DEFAULT_BRANCH_NAME}}'
+          reviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
+          github_repository: '${{env.REPOSITORY_FULL_NAME}}'
+          
+      
