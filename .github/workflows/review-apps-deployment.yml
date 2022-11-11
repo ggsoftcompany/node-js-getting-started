@@ -12,7 +12,7 @@ env:
   SECONDARY_REVIEWAPP_PREFIX_URL: 'ggsoft-ui-ra'
   SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
 jobs:
-  generate-urls:
+  generateurls:
     name: 'Creae Review APP'
     #if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app')}}
     runs-on: windows-latest
@@ -21,10 +21,10 @@ jobs:
       url: 'http://google.com'
     # Map a step output to a job output
     outputs:
-      reviewapp_URL: ${{ steps.generateurl.outputs.reviewapp_URL }}
-      secondaryReviewapp_URL: ${{ steps.generateurl.outputs.secondaryReviewapp_URL }}
+      reviewapp_URL: ${{ steps.main.outputs.reviewapp_URL }}
+      secondaryReviewapp_URL: ${{ steps.main.outputs.secondaryReviewapp_URL }}
     steps:
-      - id: generateurl
+      - id: main
         uses: ggsoftcompany/whiplash-reviewapp-composite-action/generate-reviewapp-urls@main
         with:
           reviewapp_prefixURL: '${{env.REVIEWAPP_PREFIX_URL}}'
@@ -34,7 +34,7 @@ jobs:
   
   test:
     runs-on: windows-latest
-    needs: [generate-urls]
+    needs: [generateurls]
     steps:
       - run: |
-          write-output "Hello: ${{needs.generate-urls.outputs.reviewapp_URL}}"
+          write-output "Hello: ${{needs.generateurls.outputs.reviewapp_URL}}"
