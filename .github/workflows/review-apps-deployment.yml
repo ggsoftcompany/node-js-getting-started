@@ -56,6 +56,7 @@ jobs:
     needs: [pre-execution-job]
     env:
       HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
+      REPOSITORY_FULL_NAME: 'ggsoftcompany/node-js-getting-started-ui'
       DEFAULT_BRANCH_NAME: 'main'
     steps:
       - uses: ggsoftcompany/whiplash-reviewapp-composite-action/secondary-ra-composite-action@main
@@ -67,6 +68,6 @@ jobs:
           primaryReviewapp_URL: '${{needs.pre-execution-job.outputs.reviewapp_URL}}'
           reviewapp_defaultBranch: '${{env.DEFAULT_BRANCH_NAME}}'
           reviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
-          github_repository: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
+          github_repository: '${{env.REPOSITORY_FULL_NAME}}'
           
       
