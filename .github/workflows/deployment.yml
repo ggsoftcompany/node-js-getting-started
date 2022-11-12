@@ -12,5 +12,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - run: choco install mysql.odbc
-      - run: |
+      - run: choco install mysql.odbc
+      - id: aa
+        shell: powershell
+        run: |
           write-output: "MYSQL driver instaled..."
