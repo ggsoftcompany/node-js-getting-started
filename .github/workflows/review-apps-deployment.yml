@@ -1,6 +1,6 @@
 name: REVIEW-APPS-DEPLOYMENT
 on:
-  # trigger every time a pull request to main branch is opened, reopened or labeled.
+  # trigger every time a pull request to main branch is opened, reopened, labeled or closed.
   # Used to spin up a review app
   pull_request:
     branches: [main]
