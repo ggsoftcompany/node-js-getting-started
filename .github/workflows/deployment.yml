@@ -13,11 +13,11 @@ jobs:
   job1:
     runs-on: windows-latest
     steps:
-      - run: choco install mysql.odbc
+      - run: choco install choco install mysql-connector
       - id: aa
         shell: powershell
         run: |
-          [void][system.reflection.Assembly]::LoadWithPartialName("MySql.Data.dll")
+          Add-Type -Path "C:\Program Files (x86)\MySQL\*\Assemblies\v4.5.2\MySql.Data.dll"
           Write-Output "Establishing a connection with the target server ${{env.SERVER}} ..."
           $connection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString="server=$server;uid=${{env.DBUSER}};pwd=${{env.DBPASSWORD}};database=${{env.DBNAME}};SslMode=none;"}
           $connection.Open()
