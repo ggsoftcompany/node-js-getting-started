@@ -4,7 +4,7 @@ on:
   # Used to spin up a review app
   pull_request:
     branches: [main]
-    types: [opened, reopened, synchronize, labeled]
+    types: [opened, reopened, synchronize, labeled, closed]
   # workflow_dispatch allow us o manually trigger 
   workflow_dispatch:
 env:
