@@ -74,5 +74,20 @@ jobs:
           reviewapp_defaultBranch: '${{env.DEFAULT_BRANCH_NAME}}'
           reviewapp_newBranchPrefix: '${{env.SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX}}'
           github_repository: '${{env.REPOSITORY_FULL_NAME}}'
+  post-execution-job:
+    name: 'Post Deployment scripts'
+    runs-on: windows-latest
+    needs: [pre-execution-job, primary-reviewapp, secondary-reviewapp]
+    env:
+      SERVERNAME: 'devops.mysql.database.azure.com'
+      DBNAME: 'devops'
+    steps:
+      - uses: ggsoftcompany/whiplash-reviewapp-composite-action/update-redirect-uri-database@main
+        with:
+          host: '${{env.SERVERNAME}}'
+          user: '${{secrets.MYSQL_USERNAME}}'
+          password: '${{secrets.MYSQL_PASSWORD}}'
+          dbName: '${{env.DBNAME}}'
+          redirectUri: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
           
       
