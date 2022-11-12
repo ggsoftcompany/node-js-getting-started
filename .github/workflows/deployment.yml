@@ -13,7 +13,7 @@ jobs:
   job1:
     runs-on: windows-latest
     steps:
-      - run: choco install choco install mysql-connector
+      - run: choco install mysql-connector
       - id: aa
         shell: powershell
         run: |
