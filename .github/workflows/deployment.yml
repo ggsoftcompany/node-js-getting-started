@@ -3,17 +3,21 @@ on:
   # workflow_dispatch allow us o manually trigger 
   workflow_dispatch:
 
-concurrency: 
-  group: ${{ github.workflow }}-${{ github.head_ref}}
-  cancel-in-progress: true
-
+env:
+  SERVER: 'devops.mysql.database.azure.com'
+  DBUSER: 'devops'
+  DBPASSWORD: 'Ryder@123azure'
+  DBNAME: 'devops'
+  
 jobs:
   job1:
     runs-on: windows-latest
     steps:
       - run: choco install mysql.odbc
-      - run: choco install mysql.odbc
       - id: aa
         shell: powershell
         run: |
-          write-output: "MYSQL driver instaled..."
+          Write-Output "Establishing a connection with the target server ${{env.SERVER}} ..."
+          $connection = [MySql.Data.MySqlClient.MySqlConnection]@{ConnectionString="server=$server;uid=${{env.DBUSER}};pwd=${{env.DBPASSWORD}};database=${{env.DBNAME}};SslMode=none;"}
+          $connection.Open()
+          Write-Output "Connection successfully."
