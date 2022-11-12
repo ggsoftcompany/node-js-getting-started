@@ -1,0 +1,16 @@
+name: TEST
+on:
+  # workflow_dispatch allow us o manually trigger 
+  workflow_dispatch:
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.head_ref}}
+  cancel-in-progress: true
+
+jobs:
+  job1:
+    runs-on: windows-latest
+    steps:
+      - run: choco install mysql.odbc
+      - run: |
+          write-output: "MYSQL driver instaled..."
