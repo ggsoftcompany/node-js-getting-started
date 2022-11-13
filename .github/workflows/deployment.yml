@@ -3,7 +3,7 @@ on:
   pull_request:
     branches: [main]
     types: [opened, reopened, synchronize]
-  # workflow_dispatch allow us o manually trigger 
+  # workflow_dispatch allow us o manually trigger
   workflow_dispatch:
 
 env:
