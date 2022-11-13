@@ -33,10 +33,11 @@ jobs:
           path: review-app
           
       - name: Checkout secondary app repository
-        if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
+        #if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
         uses: actions/checkout@v3
         with:
           repository: ${{env.SECONDARY_APP_RESPOSITORY}}
+          ref: ${{env.SECONDARY_APP_SOURCE_BRANCH}}
           token: ${{ secrets.githubAccessToken }}
           path: secondary-review-app
       
