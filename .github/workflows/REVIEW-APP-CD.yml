@@ -3,6 +3,8 @@ on:
   pull_request:
     branches: [main]
     types: [opened, reopened, synchronize, closed, labeled]
+  push:
+    branches: [main]
   # workflow_dispatch allow us o manually trigger 
   workflow_dispatch:
 
