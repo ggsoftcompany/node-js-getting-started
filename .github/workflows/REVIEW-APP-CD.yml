@@ -36,8 +36,7 @@ jobs:
           write-output "Action: ${{github.event.action}}"
           #$exists = ${{contains(github.event.pull_request.labels.*.name, 'review-app')}}
           write-output "Label 'review-app': ${{contains(github.event.pull_request.labels.*.name, 'review-app')}}"
-          
-          
+                 
   manage-review-app:
     if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
     name: 'Deploy or Remove Review APP'
