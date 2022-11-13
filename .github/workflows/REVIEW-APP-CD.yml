@@ -34,8 +34,9 @@ jobs:
           
           write-output "Event: ${{github.event_name}}"
           write-output "Action: ${{github.event.action}}"
-          $exists = ${{contains(github.event.pull_request.labels.*.name, 'review-app')}}
-          write-output "Label 'review-app': $exists"
+          #$exists = ${{contains(github.event.pull_request.labels.*.name, 'review-app')}}
+          #write-output "Label 'review-app': ${{contains(github.event.pull_request.labels.*.name, 'review-app')}}"
+          write-output "Label 'review-app': false}}"
           
   manage-review-app:
     if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
