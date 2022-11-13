@@ -59,4 +59,12 @@ jobs:
           name: drop
       
       - run: |
-          echo "CHECK out donwload: ${{github.workspace}}"
+          write-output "Changing the working directory to: review-app"
+          cd review-app
+          
+          # adding heroku remote
+          write-output "Adding heroku remote url..."
+          git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/ggsoft-backend-qa.git
+          write-output "Pushing changes to heroku..."
+          git push heroku ${{github.ref}}:main -f
+          write-output "DONE"
