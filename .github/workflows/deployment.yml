@@ -1,13 +1,15 @@
 name: TEST
 on:
+  pull_request:
+    branches: [main]
+    types: [openend]
   # workflow_dispatch allow us o manually trigger 
   workflow_dispatch:
 
 env:
-  SERVER: 'devops.mysql.database.azure.com'
-  DBUSER: 'devops'
-  DBPASSWORD: 'Ryder@123azure'
-  DBNAME: 'devops'
+  HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
+  APP_PREFIX: 'ggsoft-backend-ra'
+  SECONDARY_APP_PREFIX: 'ggsoft-ui-ra'
   
 jobs:
   job1:
@@ -15,11 +17,11 @@ jobs:
     steps:
       - uses: ggsoftcompany/whiplash-reviewapp-composite-action/single-action@main
         with:
-          api-key: 'ak'
-          pipeline-name: 'pepe'
-          app-name-prefix: 'wl-core'
-          github-access-key: '2'
-          secondary-app-name-prefix: 'wl-ui'
+          api-key: '${{secrets.herokuApiKey}}'
+          pipeline-name: '${{env.HEROKU_PIPELINE}}'
+          app-name-prefix: '${{env.APP_PREFIX}}'
+          github-access-key: ${{secrets.githubAccessToken}}
+          secondary-app-name-prefix: '${{env.SECONDARY_APP_PREFIX}}'
           
           
           
