@@ -8,7 +8,7 @@ on:
   # workflow_dispatch allow us o manually trigger 
   workflow_dispatch:
 env:
-  SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'forbackendpr'
+  SECONDARY_REVIEWAPP_NEW_BRANCH_PREFIX: 'tmp-${{github.event.number}}'
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -94,9 +94,20 @@ jobs:
           redirectUri: '${{needs.pre-execution-job.outputs.secondaryReviewapp_URL}}'
   remove:
     if: ${{github.event.action == 'closed'}}
-    name: 'Remove'
+    name: 'Cleaning up resources'
     runs-on: windows-latest
     steps:
-      - run: echo "yes removing"
+      - uses: ggsoftcompany/whiplash-reviewapp-composite-action/delete-review-app@main
+        name: Remove Review App
+        with:
+          api-key: '${{secrets.herokuApiKey}}'
+          app-name: '${{env.REVIEWAPP_PREFIX_URL}}-pr-${{github.event.number}}'
+      - uses: ggsoftcompany/whiplash-reviewapp-composite-action/delete-review-app@main
+        name: Remove Secondary Review App
+        with:
+          api-key: '${{secrets.herokuApiKey}}'
+          app-name: '${{env.SECONDARY_REVIEWAPP_PREFIX_URL}}-pr-tmp-${{github.event.number}}'
+         
+      
           
       
