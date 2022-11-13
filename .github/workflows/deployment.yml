@@ -7,9 +7,12 @@ on:
   workflow_dispatch:
 
 env:
-  HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
+  HEROKU_PIPELINE: 'ggsoft-backend-pipeline'
   APP_PREFIX: 'ggsoft-backend-ra'
+  SECONDARY_HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
   SECONDARY_APP_PREFIX: 'ggsoft-ui-ra'
+  SECONDARY_APP_RESPOSITORY: 'ggsoftcompany/node-js-getting-started-ui'
+  SECONDARY_APP_SOURCE_BRANCH: 'main'
   
 jobs:
   job1:
@@ -25,7 +28,10 @@ jobs:
           pipeline-name: '${{env.HEROKU_PIPELINE}}'
           app-name-prefix: '${{env.APP_PREFIX}}'
           github-access-key: ${{secrets.githubAccessToken}}
+          secondary-pipeline-name: '${{env.SECONDARY_HEROKU_PIPELINE}}'
           secondary-app-name-prefix: '${{env.SECONDARY_APP_PREFIX}}'
+          secondary-app-repository: '${{env.SECONDARY_APP_RESPOSITORY}}'
+          secondary-app-source-branch: '${{env.SECONDARY_APP_SOURCE_BRANCH}}'
           
           
           
