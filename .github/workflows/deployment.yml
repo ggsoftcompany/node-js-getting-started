@@ -28,7 +28,7 @@ jobs:
           pipeline-name: '${{env.HEROKU_PIPELINE}}'
           app-name-prefix: '${{env.APP_PREFIX}}'
           github-access-key: ${{secrets.githubAccessToken}}
-          secondary-pipeline-name: '${{env.SECONDARY_HEROKU_PIPELINE}}'
+          secondary-app-pipeline-name: '${{env.SECONDARY_HEROKU_PIPELINE}}'
           secondary-app-name-prefix: '${{env.SECONDARY_APP_PREFIX}}'
           secondary-app-repository: '${{env.SECONDARY_APP_RESPOSITORY}}'
           secondary-app-source-branch: '${{env.SECONDARY_APP_SOURCE_BRANCH}}'
