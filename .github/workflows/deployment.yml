@@ -1,4 +1,4 @@
-name: TEST
+name: AUTOMATE-REVIEW
 on:
   pull_request:
     branches: [main]
@@ -15,13 +15,14 @@ env:
   SECONDARY_APP_SOURCE_BRANCH: 'main'
   
 jobs:
-  job1:
+  automate-review-app:
+    name: 'Deploy Review APP for Whiplash Core'
     runs-on: windows-latest
+    environment: 
+      name: 'Review App'
+      url: '${{steps.deploy.outputs.app-url}}'
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      
-      - name: Deploy Heroku Review App  
+      - id: deploy
         uses: ggsoftcompany/whiplash-reviewapp-composite-action/single-action@main
         with:
           api-key: '${{secrets.herokuApiKey}}'
@@ -32,6 +33,21 @@ jobs:
           secondary-app-name-prefix: '${{env.SECONDARY_APP_PREFIX}}'
           secondary-app-repository: '${{env.SECONDARY_APP_RESPOSITORY}}'
           secondary-app-source-branch: '${{env.SECONDARY_APP_SOURCE_BRANCH}}'
-          
-          
-          
+      
+      - name: Show review app urls 
+        run: |
+          echo "Review App URL: ${{ steps.deploy.outputs.app-url }}"
+          echo "Secondary Review App URL: ${{ steps.deploy.outputs.secondary-app-url }}"
+      
+      - name: Create comment on commit  
+        uses: phulsechinmay/rewritable-pr-comment@v0.2.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMENT_IDENTIFIER: "review-app-deployed"
+          message: |
+            A new review app was deployed to try out this pull request.
+                                          
+                              👇🏽
+
+            Primary App: ${{ steps.deploy.outputs.app-url }}
+            Secondary App: ${{ steps.deploy.outputs.secondary-app-url }}
