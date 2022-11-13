@@ -70,7 +70,7 @@ jobs:
     if: ${{github.event_name == 'push' }}
     name: 'Deploy to QA'
     runs-on: windows-latest
-    needs: [pre-execution-job, manage-review-app]
+    needs: [pre-execution-job]
     env:
       APP_URL: 'https://ggsoft-backend-qa.herokuapp.com'
     environment: 
