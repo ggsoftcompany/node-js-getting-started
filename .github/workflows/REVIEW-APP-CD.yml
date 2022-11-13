@@ -24,17 +24,29 @@ env:
   
 jobs:
   pre-execution-job:
-    name: 'Mock'
+    name: 'Checkout and publish artifact'
     runs-on: windows-latest
     steps:
-      - run: |
-          # Mock job that simulate build job. Normally in a build job 
-          # we need to checkout the code, compile, rn test and then upload an artifact.
-          # in this case all we will do is print messages
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          path: review-app
           
-          write-output "Event: ${{github.event_name}}"
-          write-output "Action: ${{github.event.action}}"
-          write-output "Label 'review-app': ${{contains(github.event.pull_request.labels.*.name, 'review-app-1')}}"
+      - name: Checkout secondary app repository
+        if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{env.SECONDARY_APP_RESPOSITORY}}
+          token: ${{ secrets.githubAccessToken }}
+          path: secondary-review-app
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: drop
+          path: |
+            review-app
+            secondary-review-app
+        
                  
   manage-review-app:
     if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
