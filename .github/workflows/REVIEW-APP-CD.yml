@@ -1,4 +1,4 @@
-name: REVIEW-APP-CD
+name: GGSOFT-BACKEND-CD
 on:
   pull_request:
     branches: [main]
@@ -21,10 +21,25 @@ env:
   MYSQL_DBNAME: 'devops'
   
 jobs:
-  automate-review-app:
-    if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
-    name: 'Manage Review APP'
+  pre-execution-job:
+    name: 'Mock'
     runs-on: windows-latest
+    steps:
+      - run: |
+          # Mock job that simulate build job. Normally in a build job 
+          # we need to checkout the code, compile, rn test and then upload an artifact.
+          # in this case all we will do is print messages
+          
+          write-output "Event: ${{github.event_name}}"
+          write-output "Action: ${{github.event.action}}"
+          $exists = ${{contains(github.event.pull_request.labels.*.name, 'review-app')}}
+          write-output "Label 'review-app': $exists"
+          
+  manage-review-app:
+    if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
+    name: 'Deploy or Remove Review APP'
+    runs-on: windows-latest
+    needs: [pre-execution-job]
     environment: 
       name: 'Review App'
       url: '${{steps.deploy.outputs.app-url}}'
@@ -49,3 +64,18 @@ jobs:
         run: |
           echo "Review App URL: ${{ steps.deploy.outputs.app-url }}"
           echo "Secondary Review App URL: ${{ steps.deploy.outputs.secondary-app-url }}"
+  
+  deploy-app-to-qa:
+    if: ${{github.event_name == 'push' }}
+    name: 'Deploy to QA'
+    runs-on: windows-latest
+    needs: [pre-execution-job, manage-review-app]
+    env:
+      APP_URL: 'https://ggsoft-backend-qa.herokuapp.com'
+    environment: 
+      name: 'QA'
+      url: '${{env.APP_URL}}'
+    steps:
+      - id: deploy
+        run: |
+          echo "Deploying into QA"
