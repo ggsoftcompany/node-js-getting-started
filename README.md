@@ -25,7 +25,7 @@ $ heroku create
 $ git push heroku main
 $ heroku open
 ```
-or
+or323
 su
 [![Deploy to Heroku](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
