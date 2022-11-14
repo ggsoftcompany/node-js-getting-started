@@ -1,4 +1,4 @@
-name: Deployment Workflow
+name: APP-CD
 on:
   pull_request:
     branches: [main]
@@ -86,6 +86,7 @@ jobs:
     runs-on: windows-latest
     needs: [pre-execution-job]
     env:
+      ENV_NAME: 'QA'
       APP_NAME: 'ggsoft-backend-qa'
     environment: 
       name: 'QA'
@@ -116,7 +117,7 @@ jobs:
           write-output "Pushing changes to new heroku remote..."
           git push heroku ${{github.ref}}:main -f
           
-          write-output "Deployment completed. "
+          write-output "Deployment into ${{env.ENV_NAME}} completed. "
     
   deploy-to-stging:
     if: ${{github.event_name == 'push' }}
@@ -127,7 +128,7 @@ jobs:
       ENV_NAME: 'Staging'
       APP_NAME: 'ggsoft-backend-staging'
     environment: 
-      name: '${{env.ENV_NAME}}'
+      name: 'Staging'
       url: '${{env.APP_URL}}'
     steps:
       - name: Download artifact
@@ -166,7 +167,7 @@ jobs:
       ENV_NAME: 'Production'
       APP_NAME: 'ggsoft-backend-production'
     environment: 
-      name: '${{env.ENV_NAME}}'
+      name: 'Production'
       url: '${{env.APP_URL}}'
     steps:
       - name: Download artifact
