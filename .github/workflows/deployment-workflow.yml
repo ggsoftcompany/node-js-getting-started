@@ -142,20 +142,21 @@ jobs:
           echo "APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo " APP URL: $url"
 
-      - name: Changing working directory to 'review-app' folder
-        run: |
-          cd review-app
-
       - name: Deploy to heroku using git deployment 
         run: |
           # Deploy to heroku using git deployment 
-
-          write-output "Adding heroku remote url..."
+          
+          echo "Changing working directory..."
+          echo " Current working directory: ${{github.workspace}}"
+          echo " New working directory: '${{github.workspace}}/review-app'"
+          cd review-app
+          
+          echo "Adding heroku remote url..."
           git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/${{env.APP_NAME}}.git
-
-          write-output "Pushing changes to new heroku remote..."
+          
+          echo "Pushing changes to new heroku remote..."
           git push heroku ${{github.ref}}:main -f
-
+          
           write-output "Deployment into ${{env.ENV_NAME}} completed. "
   
   deploy-to-production:
@@ -181,18 +182,19 @@ jobs:
           echo "APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
           echo " APP URL: $url"
 
-      - name: Changing working directory to 'review-app' folder
-        run: |
-          cd review-app
-
       - name: Deploy to heroku using git deployment 
         run: |
           # Deploy to heroku using git deployment 
-
-          write-output "Adding heroku remote url..."
+          
+          echo "Changing working directory..."
+          echo " Current working directory: ${{github.workspace}}"
+          echo " New working directory: '${{github.workspace}}/review-app'"
+          cd review-app
+          
+          echo "Adding heroku remote url..."
           git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/${{env.APP_NAME}}.git
-
-          write-output "Pushing changes to new heroku remote..."
+          
+          echo "Pushing changes to new heroku remote..."
           git push heroku ${{github.ref}}:main -f
-
+          
           write-output "Deployment into ${{env.ENV_NAME}} completed. "
