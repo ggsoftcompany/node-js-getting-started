@@ -106,15 +106,15 @@ jobs:
         run: |
           # Deploy to heroku using git deployment 
           
-          write-outpu "Changing working directory..."
-          write-outpu " Current working directory: ${{github.workspace}}"
-          write-outpu " New working directory: '${{github.workspace}}/review-app'"
+          echo "Changing working directory..."
+          echo " Current working directory: ${{github.workspace}}"
+          echo " New working directory: '${{github.workspace}}/review-app'"
           cd review-app
           
-          write-output "Adding heroku remote url..."
+          echo "Adding heroku remote url..."
           git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/${{env.APP_NAME}}.git
           
-          write-output "Pushing changes to new heroku remote..."
+          echo "Pushing changes to new heroku remote..."
           git push heroku ${{github.ref}}:main -f
           
           write-output "Deployment into ${{env.ENV_NAME}} completed. "
