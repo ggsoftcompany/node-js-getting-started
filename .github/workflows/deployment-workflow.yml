@@ -11,6 +11,10 @@ on:
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+  
+env:
+  SECONDARY_APP_RESPOSITORY: 'ggsoftcompany/node-js-getting-started-ui'
+  SECONDARY_APP_SOURCE_BRANCH: 'main'
    
 jobs:
   pre-execution-job:
@@ -50,8 +54,6 @@ jobs:
       HEROKU_PIPELINE: 'ggsoft-backend-pipeline'
       SECONDARY_HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
       SECONDARY_APP_PREFIX: 'ggsoft-ui-ra'
-      SECONDARY_APP_RESPOSITORY: 'ggsoftcompany/node-js-getting-started-ui'
-      SECONDARY_APP_SOURCE_BRANCH: 'main'
       MYSQL_SERVERNAME: 'devops.mysql.database.azure.com'
       MYSQL_DBNAME: 'devops'
     environment: 
