@@ -1,4 +1,4 @@
-name: DEPLOYMENT WORKFLOW
+name: Deployment Workflow
 on:
   pull_request:
     branches: [main]
