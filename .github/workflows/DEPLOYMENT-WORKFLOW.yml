@@ -1,0 +1,197 @@
+name: DEPLOYMENT WORKFLOW
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, closed, labeled]
+  push:
+    branches: [main]
+  # workflow_dispatch allow us o manually trigger 
+  workflow_dispatch:
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  HEROKU_PIPELINE: 'ggsoft-backend-pipeline'
+  APP_PREFIX: 'ggsoft-backend-ra'
+  SECONDARY_HEROKU_PIPELINE: 'ggsoft-ui-pipeline'
+  SECONDARY_APP_PREFIX: 'ggsoft-ui-ra'
+  SECONDARY_APP_RESPOSITORY: 'ggsoftcompany/node-js-getting-started-ui'
+  SECONDARY_APP_SOURCE_BRANCH: 'main'
+  MYSQL_SERVERNAME: 'devops.mysql.database.azure.com'
+  MYSQL_DBNAME: 'devops'
+  
+jobs:
+  pre-execution-job:
+    name: 'Checkout and publish artifact'
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # this is important in order to be able to deploy to heroku using git we need all history
+          path: review-app
+          
+      - name: Checkout secondary app repository
+        if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
+        uses: actions/checkout@v3
+        with:
+          repository: ${{env.SECONDARY_APP_RESPOSITORY}}
+          ref: ${{env.SECONDARY_APP_SOURCE_BRANCH}}
+          token: ${{ secrets.githubAccessToken }}
+          path: secondary-review-app
+      
+      - uses: actions/upload-artifact@v3
+        with:
+          name: drop
+          path: |
+            review-app
+            secondary-review-app
+        
+                 
+  manage-review-app:
+    if: ${{github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'review-app-1')}}
+    name: 'Deploy or Remove Review APP'
+    runs-on: windows-latest
+    needs: [pre-execution-job]
+    environment: 
+      name: 'Review App'
+      url: '${{steps.deploy.outputs.app-url}}'
+    steps:
+      - id: deploy
+        uses: ggsoftcompany/whiplash-reviewapp-composite-action/single-action@main
+        with:
+          api-key: '${{secrets.herokuApiKey}}'
+          pipeline-name: '${{env.HEROKU_PIPELINE}}'
+          app-name-prefix: '${{env.APP_PREFIX}}'
+          github-access-key: ${{secrets.githubAccessToken}}
+          secondary-app-pipeline-name: '${{env.SECONDARY_HEROKU_PIPELINE}}'
+          secondary-app-name-prefix: '${{env.SECONDARY_APP_PREFIX}}'
+          secondary-app-repository: '${{env.SECONDARY_APP_RESPOSITORY}}'
+          secondary-app-source-branch: '${{env.SECONDARY_APP_SOURCE_BRANCH}}'
+          mysql-servername: '${{env.MYSQL_SERVERNAME}}'
+          mysql-dbname: '${{env.MYSQL_DBNAME}}'
+          mysql-username: '${{secrets.MYSQL_USERNAME}}'
+          mysql-password: '${{secrets.MYSQL_PASSWORD}}'
+      
+      - name: Show review app urls 
+        run: |
+          echo "Review App URL: ${{ steps.deploy.outputs.app-url }}"
+          echo "Secondary Review App URL: ${{ steps.deploy.outputs.secondary-app-url }}"
+  
+  deploy-to-qa:
+    if: ${{github.event_name == 'push' }}
+    name: 'Deploy to QA'
+    runs-on: windows-latest
+    needs: [pre-execution-job]
+    env:
+      APP_NAME: 'ggsoft-backend-qa'
+    environment: 
+      name: 'QA'
+      url: '${{env.APP_URL}}'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: drop
+      
+      - name: Setup app url
+        run: |
+          $url = 'https://${{env.APP_NAME}}.herokuapp.com'
+          echo "APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo " APP URL: $url"
+      
+      - name: Changing working directory to 'review-app' folder
+        run: |
+          cd review-app
+      
+      - name: Deploy to heroku using git deployment 
+        run: |
+          # Deploy to heroku using git deployment 
+          
+          write-output "Adding heroku remote url..."
+          git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/${{env.APP_NAME}}.git
+          
+          write-output "Pushing changes to new heroku remote..."
+          git push heroku ${{github.ref}}:main -f
+          
+          write-output "Deployment completed. "
+    
+  deploy-to-stging:
+    if: ${{github.event_name == 'push' }}
+    name: 'Deploy to Staging'
+    runs-on: windows-latest
+    needs: [pre-execution-job, deploy-to-qa]
+    env:
+      ENV_NAME: 'Staging'
+      APP_NAME: 'ggsoft-backend-staging'
+    environment: 
+      name: '${{env.ENV_NAME}}'
+      url: '${{env.APP_URL}}'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: drop
+
+      - name: Setup app url
+        run: |
+          $url = 'https://${{env.APP_NAME}}.herokuapp.com'
+          echo "APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo " APP URL: $url"
+
+      - name: Changing working directory to 'review-app' folder
+        run: |
+          cd review-app
+
+      - name: Deploy to heroku using git deployment 
+        run: |
+          # Deploy to heroku using git deployment 
+
+          write-output "Adding heroku remote url..."
+          git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/${{env.APP_NAME}}.git
+
+          write-output "Pushing changes to new heroku remote..."
+          git push heroku ${{github.ref}}:main -f
+
+          write-output "Deployment into ${{env.ENV_NAME}} completed. "
+  
+  deploy-to-production:
+    if: ${{github.event_name == 'push' }}
+    name: 'Deploy to Production'
+    runs-on: windows-latest
+    needs: [pre-execution-job, deploy-to-qa, deploy-to-stging]
+    env:
+      ENV_NAME: 'Production'
+      APP_NAME: 'ggsoft-backend-production'
+    environment: 
+      name: '${{env.ENV_NAME}}'
+      url: '${{env.APP_URL}}'
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: drop
+
+      - name: Setup app url
+        run: |
+          $url = 'https://${{env.APP_NAME}}.herokuapp.com'
+          echo "APP_URL=$url" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          echo " APP URL: $url"
+
+      - name: Changing working directory to 'review-app' folder
+        run: |
+          cd review-app
+
+      - name: Deploy to heroku using git deployment 
+        run: |
+          # Deploy to heroku using git deployment 
+
+          write-output "Adding heroku remote url..."
+          git remote add heroku https://heroku:${{secrets.herokuApiKey}}@git.heroku.com/${{env.APP_NAME}}.git
+
+          write-output "Pushing changes to new heroku remote..."
+          git push heroku ${{github.ref}}:main -f
+
+          write-output "Deployment into ${{env.ENV_NAME}} completed. "
